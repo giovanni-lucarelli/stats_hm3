@@ -1,6 +1,6 @@
 ---
 title: "GroupK_HM3"
-author: "G. Lucarelli"
+author: "G. Lucarelli, Z. Jacopo"
 date: ""
 output:
   html_document:
@@ -49,18 +49,39 @@ For the three cases, we have:
 
 (i) $\alpha = \beta = 0.5$ is the non-informative Jeffreys' prior. The posterior mean is $\frac{0.5}{0.5 + 0.5 + 25} = 0.019$.
 
+
 ```{r}
 alpha <- 0.5
 beta <- 0.5
 n <- 25
 y <- 0
-curve(dbeta(x, alpha + y, beta + n - y), from = 0, to = 1, xlab = expression(pi), ylab = "Density", main = "Posterior distribution")
 
-curve(dbeta(x, alpha, beta), from = 0, to = 1, add = TRUE, col = "red")
-curve((1-x)^25, from = 0, to = 1, add = TRUE, col = "blue")
+# Plot posterior
+curve(dbeta(x, alpha + y, beta + n - y), 
+      from = 0, to = 1, 
+      xlab = expression(pi), 
+      ylab = "Density", 
+      main = "Posterior distribution")
 
-legend("topright", legend = c("Posterior", "Prior", "Likelihood"), col = c("black", "red", "blue"), lty = 1)
+# Plot prior
+curve(dbeta(x, alpha, beta), 
+      from = 0, to = 1, 
+      add = TRUE, 
+      col = "red")
 
+# Plot normalized likelihood
+# We need to normalize the likelihood to make it integrate to 1
+likelihood <- function(x) (1-x)^25
+C <- integrate(likelihood, 0, 1)$value  # Normalizing constant
+curve((1-x)^25/C, 
+      from = 0, to = 1, 
+      add = TRUE, 
+      col = "blue")
+
+legend("topright", 
+       legend = c("Posterior", "Prior", "Likelihood"), 
+       col = c("black", "red", "blue"), 
+       lty = 1)
 ```
 
 (ii) $\alpha = \beta = 1.0$ it is the uniform distribution in the interval $[0,1]$, is a prior that gives equal weight to the two possible outcomes. The posterior mean is $\frac{1.0}{1.0 + 1.0 + 25} = 0.038$.
@@ -72,7 +93,10 @@ n <- 25
 y <- 0
 curve(dbeta(x, alpha + y, beta + n - y), from = 0, to = 1, xlab = expression(pi), ylab = "Density", main = "Posterior distribution")
 curve(dbeta(x, alpha, beta), from = 0, to = 1, add = TRUE, col = "red")
-curve((1-x)^25, from = 0, to = 1, add = TRUE, col = "blue")
+
+likelihood <- function(x) (1-x)^25
+C <- integrate(likelihood, 0, 1)$value
+curve((1-x)^25 / C, from = 0, to = 1, add = TRUE, col = "blue")
 
 legend("topright", legend = c("Posterior", "Prior", "Likelihood"), col = c("black", "red", "blue"), lty = 1)
 ```
@@ -86,7 +110,8 @@ n <- 25
 y <- 0
 curve(dbeta(x, alpha + y, beta + n - y), from = 0, to = 1, xlab = expression(pi), ylab = "Density", main = "Posterior distribution")
 curve(dbeta(x, alpha, beta), from = 0, to = 1, add = TRUE, col = "red")
-curve((1-x)^25, from = 0, to = 1, add = TRUE, col = "blue")
+likelihood <- function(x) (1-x)^25
+curve((1-x)^25/C, from = 0, to = 1, add = TRUE, col = "blue")
 
 legend("topright", legend = c("Posterior", "Prior", "Likelihood"), col = c("black", "red", "blue"), lty = 1)
 ```
@@ -114,9 +139,16 @@ curve(dbeta(x, alpha + y, beta + n - y), from = 0, to = 1, add = TRUE, col = "gr
 legend("topright", legend = c("Jeffreys' prior", "Uniform prior", "Beta(10,10)"), col = c("red", "blue", "green"), lty = 1)
 ```
 
-We can see that for more and more informative priors choices, the posterior distribution is shifting towards larger values of $\pi$, even for this case where there are no vegetarians in the sample. Moreover, we can see that the effects of the Jeffreys' prior and the one of the uniform distribution are pretty similiar.
+We can see that for more and more informative priors choices, the posterior distribution is shifting towards larger values of $\pi$, even for this case where there are no vegetarians in the sample.
+
+It is worth noting that higher $\alpha$ and $\beta$ values will result in stronger prior belief (eg
+Beta(10,10) prior is centered around 0.5 with high confidence). Indeed as we can see, the stronger prior is less influenced by the evidence from the data.
+
+Moreover, we can see that the effects of the Jeffreys' prior and the one of the uniform distribution are pretty similar.
+
 
 #### (b) 
+
 If we were planning to take a larger survey from the same population, we could use the posterior results of the previous survey as the prior for the new one. For a new survey with $n'$ observations and $y'$ successes, the new posterior distribution, based on the previous posterior distribution $\text{Beta}(1,26)$, is given by:
 
 $$
@@ -126,46 +158,45 @@ $$
 ## FSDS: Chapter 4, exercise 4.62
 
 For the bootstrap method, explain the similarity and difference between the true sampling
-distribution of $\hat \theta$ and the empirically-generated bootstrap distribution in terms of its center and its spread.
+distribution of $\hat{\theta}$ and the empirically-generated bootstrap distribution in terms of its center and its spread.
 
 ### Solution
 
-In the frequentistic (classical) approach we assume that If we could repeat the sample many time, from the true distribution of the underlying random variable, we would be able to build the true sampling distribution of an estimator $\hat\theta$.
+In the frequentist (classical) approach, we assume that if we could repeat the sample many times, from the true distribution of the underlying random variable, we would be able to build the true sampling distribution of an estimator $\hat\theta$.
 
-The idea of the bootstrap is to build many bootstrap samples (i.e. samples with replacement from the original data) and then compute an empirical distribution of the estimator, with the aim of aprroximate its sampling distribution. In particular, the set $\{\hat\theta_b^*\}_{b=1}^B$ gives the empirical (bootstrap) distribution of the estimator $\hat\theta$.
+The idea of the bootstrap is to generate many bootstrap samples (i.e., samples with replacement from the original data) to approximate the sampling distribution of an estimator $\hat\theta$. In the *nonparametric bootstrap* approach, this involves computing the empirical distribution of the estimator from bootstrap replicates. Specifically, the set $\{\hat\theta_b^*\}_{b=1}^B$ provides these bootstrap replicates of the estimator $\hat\theta$.
 
-The link with the frequntisic approach is given by the fact that the empirical distribution of the random variable approaches the true one in the limit of the sample size that tends to infinite.
+The link with the frequentist approach is given by the fact that as the sample size approaches infinity, the empirical distribution of the random variable converges to its true underlying distribution.
 
-**Key differences:**
+##### Key differences:
 
-Center:
+- **Center:**
 
-- True sampling distribution centers on the true population parameter $\theta$
-$$
-\text{E}[\hat\theta]=\theta
-$$
-- Bootstrap distribution centers on the sample estimate $\hat\theta$, which approximates but may differ from the true value $\theta$.
-$$
-\text{E}[\hat\theta^*]=\hat\theta
-$$
+  - True sampling distribution centers on the true population parameter $\theta$
+  $$
+  \text{E}[\hat\theta]=\theta
+  $$
+  - Bootstrap distribution centers on the sample estimate $\hat\theta$, which approximates but may differ from the true value $\theta$.
+  $$
+  \text{E}[\hat\theta^*]=\hat\theta
+  $$
 
-Spread:
+- **Spread:**
 
-- True sampling distribution's spread reflects actual sampling variability in the population:
-$$
-\text{Var}(\hat\theta) = \text{E}[(\hat\theta-\theta)^2]\\ \theta=\text{E}[\hat\theta]
-$$
-where the expected value is take over the population distribution;
-- Bootstrap distribution's spread approximates this but tends to underestimate or overestimate the true variability since it resamples from a single finite sample rather than the full population.
-
-$$
-\widehat{\text{Var}}_{boot}=\frac{1}{B}\sum_{b=1}^B(\hat\theta_b^*-\hat\theta^*)^2
-$$
-$$
-\hat\theta^*=\frac{1}{B}\sum_{b=1}^B\hat\theta_b^*
-$$
-
-
+  - True sampling distribution's spread reflects actual sampling variability in the population:
+  $$
+  \text{Var}(\hat\theta) = \text{E}[(\hat\theta-\theta)^2]\\ \theta=\text{E}[\hat\theta]
+  $$
+  where the expected value is take over the population distribution;
+  
+  - Bootstrap distribution's spread approximates this but tends to underestimate or overestimate the true variability since it resamples from a single finite sample rather than the full population.
+  
+  $$
+  \widehat{\text{Var}}_{boot}=\frac{1}{B}\sum_{b=1}^B(\hat\theta_b^*-\hat\theta^*)^2
+  $$
+  $$
+  \hat\theta^*=\frac{1}{B}\sum_{b=1}^B\hat\theta_b^*
+  $$
 
 ## FSDS: Chapter 8, exercise 8.4
 
@@ -195,13 +226,22 @@ Crabs$y <- as.factor(Crabs$y)
 Crabs$color <- as.factor(Crabs$color)
 Crabs$spine <- as.factor(Crabs$spine)
 
+# Build the initial classification tree
 fit <- rpart(y ~ weight + width + color + spine, data = Crabs)
+
+# Plot a Complexity Parameter table for an Rpart Fit
 plotcp(fit)
+
+# Plot the tree
 rpart.plot(fit)
 ```
+
+##### Prune the Tree
+
+Prune the tree to use a single explanatory variable by selecting cp such that nsplit = 1.
+
 ```{r}
 # cp such that nsplit = 1
-
 cp.onesplit<-fit$cptable[, "CP"][which(fit$cptable[, "nsplit"] ==1)]
 
 # prune the tree
@@ -209,9 +249,12 @@ p.fit <- prune(fit, cp=cp.onesplit)
 rpart.plot(p.fit, extra=1, digits=4, box.palette="auto")
 ```
 
-We can conclude that crabs with width < 25.85 are predicted to have satellites.
 
-Let's calculate the proportion of correct predictions, without cross-validation (similarly to what we did in the book example):
+From the tree shown above, we can conclude that crabs with width < 25.85 are predicted to have satellites.
+
+###### Pruned Tree evaluation
+
+Here, we calculate the proportion of correct predictions without cross-validation, (similarly to what was done in the book example).
 
 ```{r}
 predict <- predict(p.fit, type = "prob" , newdata = Crabs)[,2]>0.5
@@ -225,7 +268,7 @@ confusion.m
 sum(diag(confusion.m))/nrow(Crabs)
 ```
 
-We can see that the percentage of correct predictions is lower than the proportion of correct predictions in the example (0.751), but not much lower considering the fact that the tree is much less complex.
+We can see that the percentage of correct predictions is lower than the proportion of correct predictions in the example (0.751). However the pruned tree is considerably less complex.
 
 
 ## LAB: 
@@ -241,20 +284,44 @@ Now, compute your posterior as $π(λ|y)\propto L(λ;y)π(λ)$ for the selected 
 
 ### Solution
 
-Since the parameter $\lambda$ is such that $\lambda>0$, we need a prior defined on $\mathbb{R}^+$. The normal is not suitable since is defined over $[-\infty, + \infty]$ and the $\text{Beta}$ too, beeing defined over $[0,1]$. The only suitable choice is the $\text{Gamma}(4,2)$.
+##### Prior Selection
+
+Among the given options:
+
+1. $π(λ)=\text{Beta}(4,2)$: Is not suitable, as it's defined on $[0,1]$.
+
+2. $π(λ)=\text{Normal}(1,2)$: Is not suitable, as it's defined on $[-\infty, + \infty]$.
+
+3. $π(λ)=\text{Gamma}(4,2)$: Is suitable, as it's defined on $\mathbb{R}^+$, considering that $\lambda > 0$.
+
+##### Posterior Computation
+
+- **Likelihood:** $y_i\sim\text{Exponential}(\lambda)$
+- **Prior:** $π(λ)=\text{Gamma}(4,2)$
+
+The posterior is derived as follows:
 
 $$
-\text{Gamma}(4,2)=\frac{2^4\lambda^3e^{-2\lambda}}{\Gamma(4)}=\frac{3}{8}\lambda^3e^{-2\lambda}\\
-\pi(\lambda|y)\propto\frac{3}{8}\lambda^3e^{-2\lambda}\prod_{i=1}^n\lambda e^{-\lambda y_i} \propto \lambda^{n+3}e^{-\lambda(2+\sum_i^n y_i)}\\
+\begin{aligned}
+\text{Gamma}(4,2) &=\frac{2^4\lambda^3e^{-2\lambda}}{\Gamma(4)}=\frac{3}{8}\lambda^3e^{-2\lambda}\\
+\pi(\lambda|y) &\propto\frac{3}{8}\lambda^3e^{-2\lambda}\prod_{i=1}^n\lambda e^{-\lambda y_i}\\
+&\propto \lambda^{n+3}e^{-\lambda(2+\sum_i^n y_i)}
+\end{aligned}
 $$
-Remembering that a gamma distribution is
+Given the form of a Gamma distribution:
+
 $$
 f(\lambda; \alpha, \beta) = \frac{\beta^\alpha \lambda^{\alpha - 1} e^{-\beta \lambda}}{\Gamma(\alpha)}, \quad \lambda \geq 0
 $$
-we can see that the posterior distribution is distributed like a new gamma distribution of parameters $n+4$, $2+\sum_i^n y_i$
+
+
+it follows that the posterior distribution is also a Gamma distribution with parameters $n+4$, $2+\sum_i^n y_i$
+
 $$
 \pi(\lambda|y) = \text{Gamma}(n+4, 2+\sum_i^n y_i)\, .
 $$
+
+Indeed as we can see the analytical solution is possible due to the conjugacy between the Exponential likelihood and Gamma prior.
 
 ## ISLR: chapter 6, exercises 6.9 (points (a)-(d))
 
@@ -270,94 +337,103 @@ In this exercise, we will predict the number of applications received using the 
 
 ### Solution
 
-#### a: SPLIT THE DATA
+#### (a): Split the Data
 ```{r}
 College <- read.csv("https://www.statlearning.com/s/College.csv", header = TRUE)
-# remove the college name
+# Remove the college name column
 College <- College[, -1]
+
 
 College$Private <- as.numeric(factor(College$Private))
 
+# Set a seed for reproducibility
 set.seed(1)
+
+# Split the data into 75% training and 25% testing sets
 n <- nrow(College)
 idx.train <- sample(1:n, n*0.75, replace = FALSE)
 
 College.train <- College[idx.train,]
 College.test <- College[-idx.train,]
-
 ```
 
-#### b: LINEAR REGRESSION
+#### (b): Linear Regression
 ```{r}
+# Get the response variable for the test set
 y.test <- College.test$Apps
-n.test <- nrow(College.test)
 
+# Fit the linear regression model on the training set
 linear.mod <- lm(Apps ~., data = College.train)
 
+# Make predictions on the test set
 predictions <- predict.lm(linear.mod, newdata=College.test)
 
 errors <- y.test - predictions
 
 # Compute the Root Mean Squared Error (RMSE)
 rmse <- sqrt(mean(errors^2))
-print(paste("RMSE:", round(rmse, 2)))
+print(paste("Linear Regression RMSE:", round(rmse, 2)))
 
 # Compute the Mean Absolute Error (MAE)
 mae <- mean(abs(errors))
-print(paste("MAE:", round(mae, 2)))
+print(paste("Linear Regression MAE:", round(mae, 2)))
 ```
 
-#### c: RIDGE REGRESSION
+#### (c): Ridge Regression
 ```{r, include=FALSE}
 library(glmnet)
-```
 
-```{r}
+# Prepare the data matrices for glmnet
 X.train <- as.matrix(College.train[,-2])
 X.test <- as.matrix(College.test[,-2])
 y.train <- College.train$Apps
 y.test <- College.test$Apps
 
+# Perform cross-validation to choose optimal lambda
 cvfit_ridge <- cv.glmnet(X.train,y.train, alpha = 0)
 
+# Make predictions using the optimal lambda
 ridge.pred <- as.numeric(predict(cvfit_ridge, newx = X.test, s = "lambda.min"))
 
 errors <- y.test - ridge.pred
 
 # Compute the Root Mean Squared Error (RMSE)
 rmse <- sqrt(mean(errors^2))
-print(paste("RMSE:", round(rmse, 2)))
+print(paste("Ridge Regression RMSE:", round(rmse, 2)))
 
 # Compute the Mean Absolute Error (MAE)
 mae <- mean(abs(errors))
-print(paste("MAE:", round(mae, 2)))
+print(paste("Ridge Regression MAE:", round(mae, 2)))
 ```
 
-#### d: LASSO REGRESSION
+#### (d): Lasso Regression
 
 ```{r}
 cvfit_lasso <- cv.glmnet(X.train,y.train, alpha = 1)
 
+# Make predictions using the optimal lambda
 lasso.pred <- as.numeric(predict(cvfit_lasso, newx = X.test, s = "lambda.min"))
 
 errors <- y.test - lasso.pred
 
 # Compute the Root Mean Squared Error (RMSE)
 rmse <- sqrt(mean(errors^2))
-print(paste("RMSE:", round(rmse, 2)))
+print(paste("Lasso Regression RMSE:", round(rmse, 2)))
 
 # Compute the Mean Absolute Error (MAE)
 mae <- mean(abs(errors))
-print(paste("MAE:", round(mae, 2)))
+print(paste("Lasso Regression MAE:", round(mae, 2)))
 
 # Number of non-zero coefficients in the Lasso model at the optimal lambda
 non_zero_coef <- sum(coef(cvfit_lasso, s = "lambda.min") != 0) - 1  # Exclude the intercept
 print(paste("Number of non-zero coefficients:", non_zero_coef))
 ```
+
 ```{r}
 coef(cvfit_lasso, s = "lambda.min") 
 ```
-Notably, the coefficient for `Terminal`has been shrunk to zero.
+
+Notably, the coefficient for `Terminal` has been shrunk to zero.
 
 ## ISLR: chapter 7, exercises 7.9
 
@@ -378,6 +454,161 @@ This question uses the variables `dis` (the weighted mean of distances to five B
 
 ### Solution
 
+#### (a) Polynomial regression
+
+```{r, echo=F}
+# NOTE: I couldn't easily find the link for Boston data (if you want to search and swap it go ahead)
+# Remove the previously downloaded dataset
+rm(College) # To avoid warnings
+# Get the data
+library(ISLR2)
+data(Boston)
+```
+
+```{r}
+dis_range <- range(Boston$dis)
+dis_grid <- seq(dis_range[1], dis_range[2], length.out = 100)
+
+# Fit cubic polynomial regression
+fit_poly <- lm(nox ~ poly(dis, 3), data = Boston)
+
+# Generate predictions
+preds <- predict(fit_poly, newdata = list(dis = dis_grid), se.fit = TRUE)
+
+# Plot data and polynomial fit
+par(mfrow = c(1, 1))
+plot(Boston$dis, Boston$nox, xlab = "dis", ylab = "nox", col = "darkgrey", pch = 16, cex = 0.5, main = "Cubic Polynomial Fit")
+lines(dis_grid, preds$fit, lwd = 2, col = "blue")
+
+# Confidence intervals
+se_bands <- cbind(preds$fit + 2 * preds$se.fit, preds$fit - 2 * preds$se.fit)
+matlines(dis_grid, se_bands, lwd = 1, col = "blue", lty = 3)
+```
+
+#### (b) Plot polynomial fits for different polynomial degrees
+
+```{r, fig.width=12, fig.height=8}
+rss_values <- numeric(10)
+dis_range <- range(Boston$dis)
+dis_grid <- seq(dis_range[1], dis_range[2], length.out = 100)
+
+# Set up the plot
+par(mfrow = c(2, 5))
+
+# Loop through polynomial degrees
+for (degree in 1:10) {
+  # Fit polynomial regression
+  fit <- lm(nox ~ poly(dis, degree), data = Boston)
+  
+  # Calculate RSS
+  rss_values[degree] <- sum(residuals(fit)^2)
+  
+  # Generate predictions
+  preds <- predict(fit, newdata = list(dis = dis_grid))
+  
+  # Plot data and fit
+  plot(Boston$dis, Boston$nox, xlab = "dis", ylab = "nox", col = "darkgrey", pch = 16, cex = 0.5,
+       main = paste("Degree", degree))
+  lines(dis_grid, preds, col = "blue", lwd = 2)
+}
+
+# Print the RSS values with degree names
+for (degree in 1:10) {
+  cat(paste("RSS for Degree", degree, "polynomial:", round(rss_values[degree], 4)), "\n")
+}
+```
+
+```{r}
+# Plot RSS as a function of degree
+par(mfrow = c(1, 1))
+plot(1:10, rss_values, type = "b", pch = 19, col = "red", xlab = "Polynomial Degree", 
+     ylab = "RSS", main = "Residual Sum of Squares by Degree")
+```
+
+#### (c) Select the optimal degree for the polynomial
+
+```{r, echo= F}
+suppressMessages(library(boot))
+```
+
+```{r}
+# Define k-fold CV function for polynomial degrees
+cv_error <- numeric(10)
+for (degree in 1:10) {
+  fit <- glm(nox ~ poly(dis, degree), data = Boston)
+  cv_error[degree] <- cv.glm(Boston, fit, K = 10)$delta[1]
+}
+
+# Plot CV error
+plot(1:10, cv_error, type = "b", pch = 19, col = "red",
+     xlab = "Polynomial Degree", ylab = "CV Error",
+     main = "Cross-Validation Error by Polynomial Degree")
+```
+ 
+ The polynomial degree with the lowest cross-validation error is (degree 3 or 4); therefore, a sensible choice would be to use 3 degrees. This actually is not too surprising considering that higher-degree polynomials in general tend to overfit the data and oscillate quite a bit.
+
+#### (d) Regression Splines 4 degrees of freedom
+
+```{r}
+library(splines)
+
+# Fit the regression spline with 4 degrees of freedom
+fit_spline <- lm(nox ~ bs(dis, df = 4), data = Boston)
+summary(fit_spline)
+
+dis_range <- range(Boston$dis)
+dis_grid <- seq(dis_range[1], dis_range[2], length.out = 100)
+preds <- predict(fit_spline, newdata = data.frame(dis = dis_grid), se.fit = TRUE)
+
+# Plot the data and spline fit
+par(mfrow = c(1, 1))
+plot(Boston$dis, Boston$nox, col = "darkgrey", pch = 16, cex = 0.5, xlab = "dis", ylab = "nox", main = "Regression Spline (df = 4)")
+lines(dis_grid, preds$fit, col = "blue", lwd = 2)
+```
+
+The knots are set uniformly...
+TODO: Add description
+
+#### (e) Regression Spline for a range of degrees of freedom
+
+
+```{r, fig.width=12, fig.height=8}
+# Set the range of degrees of freedom to test
+df_range <- 3:10
+
+rss_values <- numeric(length(df_range))
+par(mfrow = c(2, 4))
+
+# Fit splines for each degree of freedom and calculate the RSS
+for (i in seq_along(df_range)) {
+  df <- df_range[i]
+  
+  # Fit the regression spline model
+  fit_spline <- lm(nox ~ bs(dis, df = df), data = Boston)
+  rss_values[i] <- sum(residuals(fit_spline)^2)
+  dis_grid <- seq(min(Boston$dis), max(Boston$dis), length.out = 100)
+  preds <- predict(fit_spline, newdata = data.frame(dis = dis_grid))
+  
+  # Plot the data and the spline fit
+  plot(Boston$dis, Boston$nox, col = "darkgrey", pch = 16, cex = 0.5, 
+       xlab = "dis", ylab = "nox", main = paste("Spline Fit (df =", df, ")"))
+  lines(dis_grid, preds, col = "blue", lwd = 2)
+}
+
+# Reset plot layout
+par(mfrow = c(1, 1))
+
+# Report RSS values
+for (i in seq_along(df_range)) {
+  cat(paste("RSS for Spline with", df_range[i], "df:", round(rss_values[i], 4)), "\n")
+}
+```
+
+As we can see, when the degrees of freedom (df) increase, the variance also increases. The model follows the data more and more. This generally leads to a decrease in RSS but at the same time leads to overfitting, especially when the df are high.
+
+#### (f) Perform cross-validation
+
+
 ## GAM
 
 This question is about using gam for univariate smoothing, the advantages of penalized regression and weighting a smooth model fit. The mcycle data in the MASS package are a classic dataset in univariate smoothing, introduced in Silverman (1985). The data measure the acceleration of the rider’s head, against time, in a simulated motorcycle crash.
@@ -395,3 +626,49 @@ This question is about using gam for univariate smoothing, the advantages of pen
 6. Fit a linear model including a b-spline using the function bs on times and select a suitable degree and the knots position. Compare this model with the previous ones and comment.
 
 ### Soltuion
+
+---
+title: "Motorcycle Crash Data Analysis"
+output: html_document
+---
+
+```{r, echo=F}
+suppressMessages(library(MASS))
+suppressMessages(library(mgcv))
+```
+
+#### 1. GAM fit with GCV
+
+```{r}
+# Plot raw data and fit GAM
+plot(mcycle$times, mcycle$accel, xlab="Time", ylab="Acceleration", 
+     main="GAM Fit with GCV", pch=16)
+
+# Fit GAM model with k=35
+fit.1 <- gam(accel ~ s(times, k=35), data=mcycle)
+
+lines(mcycle$times[order(mcycle$times)], 
+      fitted(fit.1)[order(mcycle$times)], col="red", lwd=2)
+
+points(mcycle$times, fitted(fit.1) + residuals(fit.1), 
+       col="grey", pch="+")
+
+summary(fit.1)
+```
+
+#### 2. Polynomial fit
+
+```{r}
+# Get effective degrees of freedom from GAM
+edf <- round(summary(fit.1)$edf)
+
+# Fit polynomial model
+fit.2 <- lm(accel ~ poly(times, edf), data=mcycle)
+
+# Plot polynomial fit with partial residuals
+par(mfrow=c(1,1))
+termplot(fit.2, partial.resid=TRUE, se=FALSE, main="Polynomial Fit")
+```
+
+#### 3. Unpenalized thin plate spline
+
