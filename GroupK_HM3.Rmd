@@ -1,6 +1,6 @@
 ---
 title: "GroupK_HM3"
-author: "G. Lucarelli, Z. Jacopo"
+author: "G. Lucarelli, Z. Jacopo, A. Nicic"
 date: ""
 output:
   html_document:
@@ -653,6 +653,11 @@ lines(mcycle$times[order(mcycle$times)],
 points(mcycle$times, fitted(fit.1) + residuals(fit.1), 
        col="grey", pch="+")
 
+# Legend for clarity
+legend("topright", legend = c("Observed", "Smooth Fit", "Partial Residuals"),
+       col = c("black", "red", "grey"), pch = c(16, NA, 3), lty = c(NA, 1, NA),
+       lwd = c(NA, 2, NA))
+
 summary(fit.1)
 ```
 
@@ -668,7 +673,167 @@ fit.2 <- lm(accel ~ poly(times, edf), data=mcycle)
 # Plot polynomial fit with partial residuals
 par(mfrow=c(1,1))
 termplot(fit.2, partial.resid=TRUE, se=FALSE, main="Polynomial Fit")
+
+# Legend for clarity
+legend("topright", 
+       legend = c("Polynomial Fit", "Partial Residuals"), 
+       col = c("red", "grey"), 
+       lty = c(1, NA), 
+       pch = c(NA, 1),
+       lwd = c(2, NA))
+
+summary(fit.2)
 ```
 
 #### 3. Unpenalized thin plate spline
+```{r}
 
+# Fit an Unpenalized tin plate regression spline using gam
+fit.3 <- gam(accel ~ s(times, k = 35, bs = "tp"), data = mcycle, sp = 1e-10)
+
+# Plot the un-penalized thin plate spline fit
+plot(mcycle$times, mcycle$accel, xlab = "Time", ylab = "Acceleration",
+     main = "Unpenalized tin plate spline", pch = 16, col = "black")
+lines(mcycle$times[order(mcycle$times)], 
+      fitted(fit.3)[order(mcycle$times)], col="red", lwd=2)
+
+# Add partial residuals
+points(mcycle$times, fitted(fit.3) + residuals(fit.3), col = "grey", pch = "+")
+
+# Add legend for clarity
+legend("topright", 
+       legend = c("Observed", "Unpenalized TPS Fit", "Partial Residuals"), 
+       col = c("black", "red", "grey"), 
+       pch = c(16, NA, 3), 
+       lty = c(NA, 1, NA), 
+       lwd = c(NA, 2, NA))
+
+summary(fit.3)
+```
+
+#### 4. Unpenalized cubic regression spline
+```{r}
+
+# Fit an Unpenalized tin plate regression spline using gam
+fit.4 <- gam(accel ~ s(times, k = 35, bs = "cr"), data = mcycle, sp = 1e-10)
+
+# Plot the un-penalized thin plate spline fit
+plot(mcycle$times, mcycle$accel, xlab = "Time", ylab = "Acceleration",
+     main = "Unpenalized cubic regression spline", pch = 16, col = "black")
+lines(mcycle$times[order(mcycle$times)], 
+      fitted(fit.4)[order(mcycle$times)], col="red", lwd=2)
+
+# Add partial residuals
+points(mcycle$times, fitted(fit.4) + residuals(fit.4), col = "grey", pch = "+")
+
+# Add legend for clarity
+legend("topright", 
+       legend = c("Observed", "Unpenalized CRS Fit", "Partial Residuals"), 
+       col = c("black", "red", "grey"), 
+       pch = c(16, NA, 3), 
+       lty = c(NA, 1, NA), 
+       lwd = c(NA, 2, NA))
+
+summary(fit.4)
+```
+
+Ordering of the models based on their acceptability of the results (GCV, Deviance Explained and Adjusted \( R^2 \)) would be in this following order: GAM with GC, TPS, CRS, Polynomial Regression.
+
+Explanation:
+
+##### *GAM with GC:*
+- Has the lowest GCV of 565.15, indicating the best trade-off between fit and model complexity 
+- Has the highest adjusted \( R^2 \) value of 0.78, which is also the best amongst all 4 models
+
+##### *Unpenalized Thin Plate Spline:*
+- Highest explained deviance (83%)
+- Slightly lower Adjusted \( R^2 \) than GAM (0.771)
+- Has a much higher GCV of 726.53, suggesting overfitting
+
+##### *Unpenalized Cubic Regression Spline:*
+- Even lower Adjusted \( R^2 \) of 0.766
+- Devience explained is slightly lower thank the TPS model (82.6%)
+- Also has a very high GCV of 742.52
+
+##### *Polynomial Fit:*
+- lowest Adjusted \( R^2 \) amongst all 4 models 0.7625 
+- High RSE of 23.55, indicating a higher average deviation of residuals from the observed values
+
+
+
+#### 5. Model residuals/time 
+```{r}
+par(mfrow = c(2, 2), mar = c(4, 4, 2, 1))
+
+# Residuals for GAM with GCV
+plot(mcycle$times, residuals(fit.1), main = "Residuals: GAM with GCV", 
+     xlab = "Time", ylab = "Residuals", pch = 16, col = "blue")
+abline(h = 0, col = "red", lwd = 2)
+
+# Residuals for Polynomial Fit
+plot(mcycle$times, residuals(fit.2), main = "Residuals: Polynomial Fit", 
+     xlab = "Time", ylab = "Residuals", pch = 16, col = "blue")
+abline(h = 0, col = "red", lwd = 2)
+
+# Residuals for Unpenalized Thin Plate Spline
+plot(mcycle$times, residuals(fit.3), main = "Residuals: Thin Plate Spline", 
+     xlab = "Time", ylab = "Residuals", pch = 16, col = "blue")
+abline(h = 0, col = "red", lwd = 2)
+
+# Residuals for Unpenalized Cubic Regression Spline
+plot(mcycle$times, residuals(fit.4), main = "Residuals: Cubic Regression Spline", 
+     xlab = "Time", ylab = "Residuals", pch = 16, col = "blue")
+abline(h = 0, col = "red", lwd = 2)
+```
+
+
+##### *GAM with GC:*
+- Residuals are evenly scattered around 0 across the time range
+- No noticeable patterns, suggesting a well-fitted model without significant bias or overfitting
+
+##### *Polynomial Fit:*
+- Residuals show some oscillatory patterns, particularly at the edges of the time range
+- Indicates overfitting or poor flexibility in capturing the underlying data structure
+
+##### *Unpenalized Thin Plate Spline:*
+- Residuals are generally close to 0 but show some clustering patterns at certain time intervals
+- Suggests slight overfitting due to lack of penalization
+
+##### *Unpenalized Cubic Regression Spline:*
+- Similar to the thin plate spline, residuals are close to 0 but show some clustering
+- Marginally less pronounced patterns compared to the thin plate spline, but still indicative of overfitting
+
+
+
+#### 6. B-spline linear model
+```{r}
+knots <- quantile(mcycle$times, probs = seq(0, 1, length.out = 33))
+
+# Fit B-spline model
+fit.bs <- lm(accel ~ bs(times, degree = 3, knots = knots), data = mcycle)
+
+
+# Plot the B-spline fit
+plot(mcycle$times, mcycle$accel, xlab = "Time", ylab = "Acceleration", 
+     main = "B-Spline Fit", pch = 16, col = "black")
+lines(mcycle$times[order(mcycle$times)], 
+      fitted(fit.bs)[order(mcycle$times)], col = "red", lwd = 2)
+
+# Add residuals to the plot
+points(mcycle$times, fitted(fit.bs) + residuals(fit.bs), col = "grey", pch = "+")
+
+# Add legend
+legend("topright", 
+       legend = c("Observed", "B-Spline Fit", "Partial Residuals"), 
+       col = c("black", "red", "grey"), 
+       pch = c(16, NA, 3), 
+       lty = c(NA, 1, NA), 
+       lwd = c(NA, 2, NA))
+
+summary(fit.bs)
+```
+
+##### *Comparison to other models:*
+- Poorer fit quality compared to penalized spline approaches and GAM
+- Has the same Adjusted \( R^2 \) as the CRS model (0.766)
+- Slightly lower RSE than the polynomial model (23.37)
