@@ -380,7 +380,7 @@ print(paste("Linear Regression MAE:", round(mae, 2)))
 ```
 
 #### (c): Ridge Regression
-```{r, include=FALSE}
+```{r}
 library(glmnet)
 
 # Prepare the data matrices for glmnet
