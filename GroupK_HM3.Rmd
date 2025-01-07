@@ -1,6 +1,6 @@
 ---
 title: "GroupK_HM3"
-author: "G. Lucarelli, Z. Jacopo, A. Nicic"
+author: "G. Lucarelli, J. Zacchigna, A. Nicic, E. Tiozzo Netti, M. RIZWAN"
 date: ""
 output:
   html_document:
@@ -566,8 +566,7 @@ plot(Boston$dis, Boston$nox, col = "darkgrey", pch = 16, cex = 0.5, xlab = "dis"
 lines(dis_grid, preds$fit, col = "blue", lwd = 2)
 ```
 
-The knots are set uniformly...
-TODO: Add description
+By providing `df` and not specific knot locations, the bs() function places knots at quantiles of the predictor variable (`dis`) by default, this ensures that the knots are distributed according to the data density.
 
 #### (e) Regression Spline for a range of degrees of freedom
 
@@ -608,6 +607,30 @@ As we can see, when the degrees of freedom (df) increase, the variance also incr
 
 #### (f) Perform cross-validation
 
+```{r}
+# Define k-fold CV function for spline degrees of freedom
+set.seed(123)
+cv_error <- numeric(length(df_range))
+for (i in seq_along(df_range)) {
+  df <- df_range[i]
+  fit <- glm(nox ~ bs(dis, df = df, Boundary.knots = range(Boston$dis)), data = Boston)
+  cv_error[i] <- cv.glm(Boston, fit, K = 10)$delta[1]
+}
+
+plot( df_range, cv_error, type = "b", pch = 19, col = "red",
+     xlab = "Degrees of Freedom", ylab = "CV Error",
+     main = "Cross-Validation Error by Degrees of Freedom")
+```
+
+
+```{r}
+# Find the optimal degrees of freedom
+optimal_df <- df_range[which.min(cv_error)]
+min_error <- min(cv_error)
+cat("Optimal degrees of freedom:", optimal_df, "with minimum CV error:", min_error, "\n")
+```
+
+The best value for degrees of freedom is df = 5, as it has the lowest cross-validation error. The CV error decreases from df = 3 to df = 5, showing that increasing flexibility improves the model's performance up to this point. After df = 5, the CV error either increases or remains nearly the same, suggesting that adding more flexibility does not significantly improve the model. This indicates potential overfitting at higher degrees of freedom.
 
 ## GAM
 
@@ -737,9 +760,7 @@ legend("topright",
 summary(fit.4)
 ```
 
-Ordering of the models based on their acceptability of the results (GCV, Deviance Explained and Adjusted \( R^2 \)) would be in this following order: GAM with GC, TPS, CRS, Polynomial Regression.
-
-Explanation:
+By ordering of the models based on their results (GCV, Deviance Explained and Adjusted \( R^2 \)) we have: 
 
 ##### *GAM with GC:*
 - Has the lowest GCV of 565.15, indicating the best trade-off between fit and model complexity 
@@ -759,6 +780,7 @@ Explanation:
 - lowest Adjusted \( R^2 \) amongst all 4 models 0.7625 
 - High RSE of 23.55, indicating a higher average deviation of residuals from the observed values
 
+The results highlight the superiority of spline-based models over traditional polynomial fits in capturing complex relationships. The GAM with GC emerges as the best overall choice due to its ability to balance flexibility and generalizability, as indicated by its low GCV and high adjusted. The unpenalized TPS and CRS models provide strong fits but suffer from higher GCV values, suggesting they may overfit the data. Meanwhile, the polynomial fit lags behind in both fit quality and predictive performance, demonstrating the limitations of relying on simpler parametric approaches for this data.
 
 
 #### 5. Model residuals/time 
