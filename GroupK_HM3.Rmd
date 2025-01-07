@@ -21,34 +21,40 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## FSDS: Chapter 4, exercise 4.24
 
-Refer to the vegetarian survey result in Exercise 4.6, with $n = 25$ and no vegetarians.
+Refer to the vegetarian survey result in Exercise 4.6, with $n = 25$ and
+no vegetarians.
 
-(a) Find the Bayesian estimate of $\pi$ using a beta prior distribution with α = β equal (i) 0.5, (ii) 1.0,(iii) 10.0.Explain how the choice of prior distribution affects the posterior mean
-estimate.
+(a) Find the Bayesian estimate of $\pi$ using a beta prior distribution
+    with α = β equal (i) 0.5, (ii) 1.0,(iii) 10.0.Explain how the choice
+    of prior distribution affects the posterior mean estimate.
 
-(b) If you were planning how to take a larger survey from the same population, explain how
-you can use the posterior results of the previous survey with $n = 25$ based on the prior
-with α = β = 1 to form the prior distribution to use with the new survey results.
-
+(b) If you were planning how to take a larger survey from the same
+    population, explain how you can use the posterior results of the
+    previous survey with $n = 25$ based on the prior with α = β = 1 to
+    form the prior distribution to use with the new survey results.
 
 ### Solution
 
-We know that the prior distribution in a $\text{Beta}(\alpha,\beta)$ and that the likelihood for the binomial distribution is:
+We know that the prior distribution in a $\text{Beta}(\alpha,\beta)$ and
+that the likelihood for the binomial distribution is:
 
 $$
 L(\pi;y)=\binom{n}{y}\pi^y(1-\pi)^{n-y}=(1-\pi)^{25}\,.
-$$
-Under this assumptions we know that the posterior distribution is given by a Beta distribution with parameters $\alpha + y$ and $\beta + n - y$. The posterior mean is therefore $\frac{\alpha + y}{\alpha + \beta + n}$.
+$$ Under this assumptions we know that the posterior distribution is
+given by a Beta distribution with parameters $\alpha + y$ and
+$\beta + n - y$. The posterior mean is therefore
+$\frac{\alpha + y}{\alpha + \beta + n}$.
 
 $$
 \text{Posterior}(\pi|y=0)=\text{Beta}(\alpha + y, \beta + n - y)
 $$
 
-#### (a) 
+#### (a)
+
 For the three cases, we have:
 
-(i) $\alpha = \beta = 0.5$ is the non-informative Jeffreys' prior. The posterior mean is $\frac{0.5}{0.5 + 0.5 + 25} = 0.019$.
-
+(i) $\alpha = \beta = 0.5$ is the non-informative Jeffreys' prior. The
+    posterior mean is $\frac{0.5}{0.5 + 0.5 + 25} = 0.019$.
 
 ```{r}
 alpha <- 0.5
@@ -84,7 +90,10 @@ legend("topright",
        lty = 1)
 ```
 
-(ii) $\alpha = \beta = 1.0$ it is the uniform distribution in the interval $[0,1]$, is a prior that gives equal weight to the two possible outcomes. The posterior mean is $\frac{1.0}{1.0 + 1.0 + 25} = 0.038$.
+(ii) $\alpha = \beta = 1.0$ it is the uniform distribution in the
+     interval $[0,1]$, is a prior that gives equal weight to the two
+     possible outcomes. The posterior mean is
+     $\frac{1.0}{1.0 + 1.0 + 25} = 0.038$.
 
 ```{r}
 alpha <- 1.0
@@ -101,7 +110,9 @@ curve((1-x)^25 / C, from = 0, to = 1, add = TRUE, col = "blue")
 legend("topright", legend = c("Posterior", "Prior", "Likelihood"), col = c("black", "red", "blue"), lty = 1)
 ```
 
-(iii) $\alpha = \beta = 10.0$ is a prior that gives more weight to the value of $\pi = 0.5$. The posterior mean is $\frac{10.0}{10.0 + 10.0 + 25} = 0.222$.
+(iii) $\alpha = \beta = 10.0$ is a prior that gives more weight to the
+      value of $\pi = 0.5$. The posterior mean is
+      $\frac{10.0}{10.0 + 10.0 + 25} = 0.222$.
 
 ```{r}
 alpha <- 10.0
@@ -139,17 +150,25 @@ curve(dbeta(x, alpha + y, beta + n - y), from = 0, to = 1, add = TRUE, col = "gr
 legend("topright", legend = c("Jeffreys' prior", "Uniform prior", "Beta(10,10)"), col = c("red", "blue", "green"), lty = 1)
 ```
 
-We can see that for more and more informative priors choices, the posterior distribution is shifting towards larger values of $\pi$, even for this case where there are no vegetarians in the sample.
+We can see that for more and more informative priors choices, the
+posterior distribution is shifting towards larger values of $\pi$, even
+for this case where there are no vegetarians in the sample.
 
-It is worth noting that higher $\alpha$ and $\beta$ values will result in stronger prior belief (eg
-Beta(10,10) prior is centered around 0.5 with high confidence). Indeed as we can see, the stronger prior is less influenced by the evidence from the data.
+It is worth noting that higher $\alpha$ and $\beta$ values will result
+in stronger prior belief (eg Beta(10,10) prior is centered around 0.5
+with high confidence). Indeed as we can see, the stronger prior is less
+influenced by the evidence from the data.
 
-Moreover, we can see that the effects of the Jeffreys' prior and the one of the uniform distribution are pretty similar.
+Moreover, we can see that the effects of the Jeffreys' prior and the one
+of the uniform distribution are pretty similar.
 
+#### (b)
 
-#### (b) 
-
-If we were planning to take a larger survey from the same population, we could use the posterior results of the previous survey as the prior for the new one. For a new survey with $n'$ observations and $y'$ successes, the new posterior distribution, based on the previous posterior distribution $\text{Beta}(1,26)$, is given by:
+If we were planning to take a larger survey from the same population, we
+could use the posterior results of the previous survey as the prior for
+the new one. For a new survey with $n'$ observations and $y'$ successes,
+the new posterior distribution, based on the previous posterior
+distribution $\text{Beta}(1,26)$, is given by:
 
 $$
 \text{Posterior}(\pi|y')=\text{Beta}(1 + y', 26 + n' - y')\,.
@@ -157,52 +176,69 @@ $$
 
 ## FSDS: Chapter 4, exercise 4.62
 
-For the bootstrap method, explain the similarity and difference between the true sampling
-distribution of $\hat{\theta}$ and the empirically-generated bootstrap distribution in terms of its center and its spread.
+For the bootstrap method, explain the similarity and difference between
+the true sampling distribution of $\hat{\theta}$ and the
+empirically-generated bootstrap distribution in terms of its center and
+its spread.
 
 ### Solution
 
-In the frequentist (classical) approach, we assume that if we could repeat the sample many times, from the true distribution of the underlying random variable, we would be able to build the true sampling distribution of an estimator $\hat\theta$.
+In the frequentist (classical) approach, we assume that if we could
+repeat the sample many times, from the true distribution of the
+underlying random variable, we would be able to build the true sampling
+distribution of an estimator $\hat\theta$.
 
-The idea of the bootstrap is to generate many bootstrap samples (i.e., samples with replacement from the original data) to approximate the sampling distribution of an estimator $\hat\theta$. In the *nonparametric bootstrap* approach, this involves computing the empirical distribution of the estimator from bootstrap replicates. Specifically, the set $\{\hat\theta_b^*\}_{b=1}^B$ provides these bootstrap replicates of the estimator $\hat\theta$.
+The idea of the bootstrap is to generate many bootstrap samples (i.e.,
+samples with replacement from the original data) to approximate the
+sampling distribution of an estimator $\hat\theta$. In the
+*nonparametric bootstrap* approach, this involves computing the
+empirical distribution of the estimator from bootstrap replicates.
+Specifically, the set $\{\hat\theta_b^*\}_{b=1}^B$ provides these
+bootstrap replicates of the estimator $\hat\theta$.
 
-The link with the frequentist approach is given by the fact that as the sample size approaches infinity, the empirical distribution of the random variable converges to its true underlying distribution.
+The link with the frequentist approach is given by the fact that as the
+sample size approaches infinity, the empirical distribution of the
+random variable converges to its true underlying distribution.
 
 ##### Key differences:
 
-- **Center:**
+-   **Center:**
 
-  - True sampling distribution centers on the true population parameter $\theta$
-  $$
-  \text{E}[\hat\theta]=\theta
-  $$
-  - Bootstrap distribution centers on the sample estimate $\hat\theta$, which approximates but may differ from the true value $\theta$.
-  $$
-  \text{E}[\hat\theta^*]=\hat\theta
-  $$
+    -   True sampling distribution centers on the true population
+        parameter $\theta$ $$
+        \text{E}[\hat\theta]=\theta
+        $$
+    -   Bootstrap distribution centers on the sample estimate
+        $\hat\theta$, which approximates but may differ from the true
+        value $\theta$. $$
+        \text{E}[\hat\theta^*]=\hat\theta
+        $$
 
-- **Spread:**
+-   **Spread:**
 
-  - True sampling distribution's spread reflects actual sampling variability in the population:
-  $$
-  \text{Var}(\hat\theta) = \text{E}[(\hat\theta-\theta)^2]\\ \theta=\text{E}[\hat\theta]
-  $$
-  where the expected value is take over the population distribution;
-  
-  - Bootstrap distribution's spread approximates this but tends to underestimate or overestimate the true variability since it resamples from a single finite sample rather than the full population.
-  
-  $$
-  \widehat{\text{Var}}_{boot}=\frac{1}{B}\sum_{b=1}^B(\hat\theta_b^*-\hat\theta^*)^2
-  $$
-  $$
-  \hat\theta^*=\frac{1}{B}\sum_{b=1}^B\hat\theta_b^*
-  $$
+    -   True sampling distribution's spread reflects actual sampling
+        variability in the population: $$
+        \text{Var}(\hat\theta) = \text{E}[(\hat\theta-\theta)^2]\\ \theta=\text{E}[\hat\theta]
+        $$ where the expected value is take over the population
+        distribution;
+
+    -   Bootstrap distribution's spread approximates this but tends to
+        underestimate or overestimate the true variability since it
+        resamples from a single finite sample rather than the full
+        population.
+
+    $$
+    \widehat{\text{Var}}_{boot}=\frac{1}{B}\sum_{b=1}^B(\hat\theta_b^*-\hat\theta^*)^2
+    $$ $$
+    \hat\theta^*=\frac{1}{B}\sum_{b=1}^B\hat\theta_b^*
+    $$
 
 ## FSDS: Chapter 8, exercise 8.4
 
-Refer to Exercise 8.1. Construct a classification tree, and prune strongly until the tree uses
-a single explanatory variable. Which crabs were predicted to have satellites? How does the
-proportion of correct predictions compare with the more complex tree in Figure 8.2?
+Refer to Exercise 8.1. Construct a classification tree, and prune
+strongly until the tree uses a single explanatory variable. Which crabs
+were predicted to have satellites? How does the proportion of correct
+predictions compare with the more complex tree in Figure 8.2?
 
 ### Solution
 
@@ -212,13 +248,11 @@ library(rpart.plot)
 library(caret)
 ```
 
-
 ```{r}
 url <- "https://raw.github.com/stat4DS/data/main/Crabs.dat"
 Crabs <- read.table(url, header = TRUE)
 str(Crabs)
 ```
-
 
 ```{r}
 # set y as a factor, required by rpart
@@ -238,7 +272,8 @@ rpart.plot(fit)
 
 ##### Prune the Tree
 
-Prune the tree to use a single explanatory variable by selecting cp such that nsplit = 1.
+Prune the tree to use a single explanatory variable by selecting cp such
+that nsplit = 1.
 
 ```{r}
 # cp such that nsplit = 1
@@ -249,12 +284,13 @@ p.fit <- prune(fit, cp=cp.onesplit)
 rpart.plot(p.fit, extra=1, digits=4, box.palette="auto")
 ```
 
-
-From the tree shown above, we can conclude that crabs with width < 25.85 are predicted to have satellites.
+From the tree shown above, we can conclude that crabs with width \<
+25.85 are predicted to have satellites.
 
 ###### Pruned Tree evaluation
 
-Here, we calculate the proportion of correct predictions without cross-validation, (similarly to what was done in the book example).
+Here, we calculate the proportion of correct predictions without
+cross-validation, (similarly to what was done in the book example).
 
 ```{r}
 predict <- predict(p.fit, type = "prob" , newdata = Crabs)[,2]>0.5
@@ -263,16 +299,24 @@ predict <- predict(p.fit, type = "prob" , newdata = Crabs)[,2]>0.5
 confusion.m <- table(Crabs$y,predict)
 confusion.m
 ```
+
 ```{r}
 # accuracy
 sum(diag(confusion.m))/nrow(Crabs)
 ```
 
-We can see that the percentage of correct predictions is lower than the proportion of correct predictions in the example (0.751). However the pruned tree is considerably less complex.
+We can see that the percentage of correct predictions is lower than the
+proportion of correct predictions in the example (0.751). However the
+pruned tree is considerably less complex.
 
+## LAB:
 
-## LAB: 
-Suppose you receive $n=15$ phone calls in a day, and you want to build a model to assess their average length. Your likelihood for each call length is $y_i\sim\text{Exponential}(\lambda)$. Now, you have to choose the prior $\pi(\lambda)$. Please, tell which of these priors is adequate to describe the problem, and provide a short motivation for each of them:
+Suppose you receive $n=15$ phone calls in a day, and you want to build a
+model to assess their average length. Your likelihood for each call
+length is $y_i\sim\text{Exponential}(\lambda)$. Now, you have to choose
+the prior $\pi(\lambda)$. Please, tell which of these priors is adequate
+to describe the problem, and provide a short motivation for each of
+them:
 
 $π(λ)=\text{Beta}(4,2)$;
 
@@ -280,7 +324,9 @@ $π(λ)=\text{Normal}(1,2)$;
 
 $π(λ)=\text{Gamma}(4,2)$;
 
-Now, compute your posterior as $π(λ|y)\propto L(λ;y)π(λ)$ for the selected prior. If your first choice was correct, you will be able to compute it analytically.
+Now, compute your posterior as $π(λ|y)\propto L(λ;y)π(λ)$ for the
+selected prior. If your first choice was correct, you will be able to
+compute it analytically.
 
 ### Solution
 
@@ -288,16 +334,19 @@ Now, compute your posterior as $π(λ|y)\propto L(λ;y)π(λ)$ for the selected 
 
 Among the given options:
 
-1. $π(λ)=\text{Beta}(4,2)$: Is not suitable, as it's defined on $[0,1]$.
+1.  $π(λ)=\text{Beta}(4,2)$: Is not suitable, as it's defined on
+    $[0,1]$.
 
-2. $π(λ)=\text{Normal}(1,2)$: Is not suitable, as it's defined on $[-\infty, + \infty]$.
+2.  $π(λ)=\text{Normal}(1,2)$: Is not suitable, as it's defined on
+    $[-\infty, + \infty]$.
 
-3. $π(λ)=\text{Gamma}(4,2)$: Is suitable, as it's defined on $\mathbb{R}^+$, considering that $\lambda > 0$.
+3.  $π(λ)=\text{Gamma}(4,2)$: Is suitable, as it's defined on
+    $\mathbb{R}^+$, considering that $\lambda > 0$.
 
 ##### Posterior Computation
 
-- **Likelihood:** $y_i\sim\text{Exponential}(\lambda)$
-- **Prior:** $π(λ)=\text{Gamma}(4,2)$
+-   **Likelihood:** $y_i\sim\text{Exponential}(\lambda)$
+-   **Prior:** $π(λ)=\text{Gamma}(4,2)$
 
 The posterior is derived as follows:
 
@@ -307,37 +356,43 @@ $$
 \pi(\lambda|y) &\propto\frac{3}{8}\lambda^3e^{-2\lambda}\prod_{i=1}^n\lambda e^{-\lambda y_i}\\
 &\propto \lambda^{n+3}e^{-\lambda(2+\sum_i^n y_i)}
 \end{aligned}
-$$
-Given the form of a Gamma distribution:
+$$ Given the form of a Gamma distribution:
 
 $$
 f(\lambda; \alpha, \beta) = \frac{\beta^\alpha \lambda^{\alpha - 1} e^{-\beta \lambda}}{\Gamma(\alpha)}, \quad \lambda \geq 0
 $$
 
-
-it follows that the posterior distribution is also a Gamma distribution with parameters $n+4$, $2+\sum_i^n y_i$
+it follows that the posterior distribution is also a Gamma distribution
+with parameters $n+4$, $2+\sum_i^n y_i$
 
 $$
 \pi(\lambda|y) = \text{Gamma}(n+4, 2+\sum_i^n y_i)\, .
 $$
 
-Indeed as we can see the analytical solution is possible due to the conjugacy between the Exponential likelihood and Gamma prior.
+Indeed as we can see the analytical solution is possible due to the
+conjugacy between the Exponential likelihood and Gamma prior.
 
 ## ISLR: chapter 6, exercises 6.9 (points (a)-(d))
 
-In this exercise, we will predict the number of applications received using the other variables in the `College` data set.
+In this exercise, we will predict the number of applications received
+using the other variables in the `College` data set.
 
 (a) Split the data set into a training set and a test set.
 
-(b) Fit a linear model using least squares on the training set, and report the test error obtained.
+(b) Fit a linear model using least squares on the training set, and
+    report the test error obtained.
 
-(c) Fit a ridge regression model on the training set, with $\lambda$ chosen by cross-validation. Report the test error obtained.
+(c) Fit a ridge regression model on the training set, with $\lambda$
+    chosen by cross-validation. Report the test error obtained.
 
-(d) Fit a lasso model on the training set, with $\lambda$ chosen by cross-validation. Report the test error obtained, along with the number of non-zero coefficient estimates.
+(d) Fit a lasso model on the training set, with $\lambda$ chosen by
+    cross-validation. Report the test error obtained, along with the
+    number of non-zero coefficient estimates.
 
 ### Solution
 
 #### (a): Split the Data
+
 ```{r}
 College <- read.csv("https://www.statlearning.com/s/College.csv", header = TRUE)
 # Remove the college name column
@@ -358,6 +413,7 @@ College.test <- College[-idx.train,]
 ```
 
 #### (b): Linear Regression
+
 ```{r}
 # Get the response variable for the test set
 y.test <- College.test$Apps
@@ -380,6 +436,7 @@ print(paste("Linear Regression MAE:", round(mae, 2)))
 ```
 
 #### (c): Ridge Regression
+
 ```{r}
 library(glmnet)
 
@@ -437,20 +494,33 @@ Notably, the coefficient for `Terminal` has been shrunk to zero.
 
 ## ISLR: chapter 7, exercises 7.9
 
-This question uses the variables `dis` (the weighted mean of distances to five Boston employment centers) and `nox` (nitrogen oxides concentration in parts per 10 million) from the `Boston` data. We will treat `dis` as the predictor and `nox` as the response. 
+This question uses the variables `dis` (the weighted mean of distances
+to five Boston employment centers) and `nox` (nitrogen oxides
+concentration in parts per 10 million) from the `Boston` data. We will
+treat `dis` as the predictor and `nox` as the response.
 
-(a) Use the `poly()` function to fit a cubic polynomial regression to predict `nox` using `dis.` Report the regression output, and plot the resulting data and polynomial fits.
+(a) Use the `poly()` function to fit a cubic polynomial regression to
+    predict `nox` using `dis.` Report the regression output, and plot
+    the resulting data and polynomial fits.
 
-(b) Plot the polynomial fits for a range of different polynomial degrees (say, from 1 to 10), and report the associated residual sum of squares.
+(b) Plot the polynomial fits for a range of different polynomial degrees
+    (say, from 1 to 10), and report the associated residual sum of
+    squares.
 
-(c) Perform cross-validation or another approach to select the optimal degree for the polynomial, and explain your results.
+(c) Perform cross-validation or another approach to select the optimal
+    degree for the polynomial, and explain your results.
 
-(d) Use the bs() function to fit a regression spline to predict `nox` using `dis.` Report the output for the fit using four degrees of freedom. How did you choose the knots? Plot the resulting fit.
+(d) Use the bs() function to fit a regression spline to predict `nox`
+    using `dis.` Report the output for the fit using four degrees of
+    freedom. How did you choose the knots? Plot the resulting fit.
 
-(e) Now fit a regression spline for a range of degrees of freedom, and plot the resulting fits and report the resulting RSS. Describe the results obtained.
+(e) Now fit a regression spline for a range of degrees of freedom, and
+    plot the resulting fits and report the resulting RSS. Describe the
+    results obtained.
 
-(f) Perform cross-validation or another approach in order to select the best degrees of freedom for a regression spline on this data. Describe your results.
-
+(f) Perform cross-validation or another approach in order to select the
+    best degrees of freedom for a regression spline on this data.
+    Describe your results.
 
 ### Solution
 
@@ -544,8 +614,12 @@ plot(1:10, cv_error, type = "b", pch = 19, col = "red",
      xlab = "Polynomial Degree", ylab = "CV Error",
      main = "Cross-Validation Error by Polynomial Degree")
 ```
- 
- The polynomial degree with the lowest cross-validation error is (degree 3 or 4); therefore, a sensible choice would be to use 3 degrees. This actually is not too surprising considering that higher-degree polynomials in general tend to overfit the data and oscillate quite a bit.
+
+The polynomial degree with the lowest cross-validation error is (degree
+3 or 4); therefore, a sensible choice would be to use 3 degrees. This
+actually is not too surprising considering that higher-degree
+polynomials in general tend to overfit the data and oscillate quite a
+bit.
 
 #### (d) Regression Splines 4 degrees of freedom
 
@@ -566,10 +640,12 @@ plot(Boston$dis, Boston$nox, col = "darkgrey", pch = 16, cex = 0.5, xlab = "dis"
 lines(dis_grid, preds$fit, col = "blue", lwd = 2)
 ```
 
-By providing `df` and not specific knot locations, the bs() function places knots at quantiles of the predictor variable (`dis`) by default, this ensures that the knots are distributed according to the data density.
+By providing `df` and not specific knot locations, the bs() function
+places knots at quantiles of the predictor variable (`dis`) by default,
+this ensures that the knots are distributed according to the data
+density.
 
 #### (e) Regression Spline for a range of degrees of freedom
-
 
 ```{r, fig.width=12, fig.height=8}
 # Set the range of degrees of freedom to test
@@ -603,7 +679,10 @@ for (i in seq_along(df_range)) {
 }
 ```
 
-As we can see, when the degrees of freedom (df) increase, the variance also increases. The model follows the data more and more. This generally leads to a decrease in RSS but at the same time leads to overfitting, especially when the df are high.
+As we can see, when the degrees of freedom (df) increase, the variance
+also increases. The model follows the data more and more. This generally
+leads to a decrease in RSS but at the same time leads to overfitting,
+especially when the df are high.
 
 #### (f) Perform cross-validation
 
@@ -622,7 +701,6 @@ plot( df_range, cv_error, type = "b", pch = 19, col = "red",
      main = "Cross-Validation Error by Degrees of Freedom")
 ```
 
-
 ```{r}
 # Find the optimal degrees of freedom
 optimal_df <- df_range[which.min(cv_error)]
@@ -630,30 +708,52 @@ min_error <- min(cv_error)
 cat("Optimal degrees of freedom:", optimal_df, "with minimum CV error:", min_error, "\n")
 ```
 
-The best value for degrees of freedom is df = 5, as it has the lowest cross-validation error. The CV error decreases from df = 3 to df = 5, showing that increasing flexibility improves the model's performance up to this point. After df = 5, the CV error either increases or remains nearly the same, suggesting that adding more flexibility does not significantly improve the model. This indicates potential overfitting at higher degrees of freedom.
+The best value for degrees of freedom is df = 5, as it has the lowest
+cross-validation error. The CV error decreases from df = 3 to df = 5,
+showing that increasing flexibility improves the model's performance up
+to this point. After df = 5, the CV error either increases or remains
+nearly the same, suggesting that adding more flexibility does not
+significantly improve the model. This indicates potential overfitting at
+higher degrees of freedom.
 
 ## GAM
 
-This question is about using gam for univariate smoothing, the advantages of penalized regression and weighting a smooth model fit. The mcycle data in the MASS package are a classic dataset in univariate smoothing, introduced in Silverman (1985). The data measure the acceleration of the rider’s head, against time, in a simulated motorcycle crash.
+This question is about using gam for univariate smoothing, the
+advantages of penalized regression and weighting a smooth model fit. The
+mcycle data in the MASS package are a classic dataset in univariate
+smoothing, introduced in Silverman (1985). The data measure the
+acceleration of the rider’s head, against time, in a simulated
+motorcycle crash.
 
-1. Plot the acceleration against time, and use gam to fit a univariate smooth to the data, selecting the smoothing parameter by GCV (k of 30 to 40 is plenty for this example). Plot the resulting smooth, with partial residuals, but without standard errors.
+1.  Plot the acceleration against time, and use gam to fit a univariate
+    smooth to the data, selecting the smoothing parameter by GCV (k of
+    30 to 40 is plenty for this example). Plot the resulting smooth,
+    with partial residuals, but without standard errors.
 
-2. Use lm and poly to fit a polynomial to the data, with approximately the same degrees of freedom as was estimated by gam. Use termplot to plot the estimated polynomial and partial residuals. Note the substantially worse fit achieved by the polynomial, relative to the penalized regression spline fit.
+2.  Use lm and poly to fit a polynomial to the data, with approximately
+    the same degrees of freedom as was estimated by gam. Use termplot to
+    plot the estimated polynomial and partial residuals. Note the
+    substantially worse fit achieved by the polynomial, relative to the
+    penalized regression spline fit.
 
-3. It’s possible to overstate the importance of penalization in explaining the improvement of the penalized regression spline, relative to the polynomial. Use gam to refit an un-penalized thin plate regression spline to the data, with basis dimension the same as that used for the polynomial, and again produce a plot for comparison with the previous two results.
+3.  It’s possible to overstate the importance of penalization in
+    explaining the improvement of the penalized regression spline,
+    relative to the polynomial. Use gam to refit an un-penalized thin
+    plate regression spline to the data, with basis dimension the same
+    as that used for the polynomial, and again produce a plot for
+    comparison with the previous two results.
 
-4. Redo part 3 using an un-penalized cubic regression spline. You should find a fairly clear ordering of the acceptability of the results for the four models tried - what is it?
+4.  Redo part 3 using an un-penalized cubic regression spline. You
+    should find a fairly clear ordering of the acceptability of the
+    results for the four models tried - what is it?
 
-5. Now plot the model residuals against time, and comment.
+5.  Now plot the model residuals against time, and comment.
 
-6. Fit a linear model including a b-spline using the function bs on times and select a suitable degree and the knots position. Compare this model with the previous ones and comment.
+6.  Fit a linear model including a b-spline using the function bs on
+    times and select a suitable degree and the knots position. Compare
+    this model with the previous ones and comment.
 
 ### Soltuion
-
----
-title: "Motorcycle Crash Data Analysis"
-output: html_document
----
 
 ```{r, echo=F}
 suppressMessages(library(MASS))
@@ -709,6 +809,7 @@ summary(fit.2)
 ```
 
 #### 3. Unpenalized thin plate spline
+
 ```{r}
 
 # Fit an Unpenalized tin plate regression spline using gam
@@ -735,6 +836,7 @@ summary(fit.3)
 ```
 
 #### 4. Unpenalized cubic regression spline
+
 ```{r}
 
 # Fit an Unpenalized tin plate regression spline using gam
@@ -760,30 +862,46 @@ legend("topright",
 summary(fit.4)
 ```
 
-By ordering of the models based on their results (GCV, Deviance Explained and Adjusted \( R^2 \)) we have: 
+By ordering of the models based on their results (GCV, Deviance
+Explained and Adjusted $R^2$) we have:
 
 ##### *GAM with GC:*
-- Has the lowest GCV of 565.15, indicating the best trade-off between fit and model complexity 
-- Has the highest adjusted \( R^2 \) value of 0.78, which is also the best amongst all 4 models
+
+-   Has the lowest GCV of 565.15, indicating the best trade-off between
+    fit and model complexity
+-   Has the highest adjusted $R^2$ value of 0.78, which is also the best
+    amongst all 4 models
 
 ##### *Unpenalized Thin Plate Spline:*
-- Highest explained deviance (83%)
-- Slightly lower Adjusted \( R^2 \) than GAM (0.771)
-- Has a much higher GCV of 726.53, suggesting overfitting
+
+-   Highest explained deviance (83%)
+-   Slightly lower Adjusted $R^2$ than GAM (0.771)
+-   Has a much higher GCV of 726.53, suggesting overfitting
 
 ##### *Unpenalized Cubic Regression Spline:*
-- Even lower Adjusted \( R^2 \) of 0.766
-- Devience explained is slightly lower thank the TPS model (82.6%)
-- Also has a very high GCV of 742.52
+
+-   Even lower Adjusted $R^2$ of 0.766
+-   Devience explained is slightly lower thank the TPS model (82.6%)
+-   Also has a very high GCV of 742.52
 
 ##### *Polynomial Fit:*
-- lowest Adjusted \( R^2 \) amongst all 4 models 0.7625 
-- High RSE of 23.55, indicating a higher average deviation of residuals from the observed values
 
-The results highlight the superiority of spline-based models over traditional polynomial fits in capturing complex relationships. The GAM with GC emerges as the best overall choice due to its ability to balance flexibility and generalizability, as indicated by its low GCV and high adjusted. The unpenalized TPS and CRS models provide strong fits but suffer from higher GCV values, suggesting they may overfit the data. Meanwhile, the polynomial fit lags behind in both fit quality and predictive performance, demonstrating the limitations of relying on simpler parametric approaches for this data.
+-   lowest Adjusted $R^2$ amongst all 4 models 0.7625
+-   High RSE of 23.55, indicating a higher average deviation of
+    residuals from the observed values
 
+The results highlight the superiority of spline-based models over
+traditional polynomial fits in capturing complex relationships. The GAM
+with GC emerges as the best overall choice due to its ability to balance
+flexibility and generalizability, as indicated by its low GCV and high
+adjusted. The unpenalized TPS and CRS models provide strong fits but
+suffer from higher GCV values, suggesting they may overfit the data.
+Meanwhile, the polynomial fit lags behind in both fit quality and
+predictive performance, demonstrating the limitations of relying on
+simpler parametric approaches for this data.
 
-#### 5. Model residuals/time 
+#### 5. Model residuals/time
+
 ```{r}
 par(mfrow = c(2, 2), mar = c(4, 4, 2, 1))
 
@@ -808,26 +926,34 @@ plot(mcycle$times, residuals(fit.4), main = "Residuals: Cubic Regression Spline"
 abline(h = 0, col = "red", lwd = 2)
 ```
 
-
 ##### *GAM with GC:*
-- Residuals are evenly scattered around 0 across the time range
-- No noticeable patterns, suggesting a well-fitted model without significant bias or overfitting
+
+-   Residuals are evenly scattered around 0 across the time range
+-   No noticeable patterns, suggesting a well-fitted model without
+    significant bias or overfitting
 
 ##### *Polynomial Fit:*
-- Residuals show some oscillatory patterns, particularly at the edges of the time range
-- Indicates overfitting or poor flexibility in capturing the underlying data structure
+
+-   Residuals show some oscillatory patterns, particularly at the edges
+    of the time range
+-   Indicates overfitting or poor flexibility in capturing the
+    underlying data structure
 
 ##### *Unpenalized Thin Plate Spline:*
-- Residuals are generally close to 0 but show some clustering patterns at certain time intervals
-- Suggests slight overfitting due to lack of penalization
+
+-   Residuals are generally close to 0 but show some clustering patterns
+    at certain time intervals
+-   Suggests slight overfitting due to lack of penalization
 
 ##### *Unpenalized Cubic Regression Spline:*
-- Similar to the thin plate spline, residuals are close to 0 but show some clustering
-- Marginally less pronounced patterns compared to the thin plate spline, but still indicative of overfitting
 
-
+-   Similar to the thin plate spline, residuals are close to 0 but show
+    some clustering
+-   Marginally less pronounced patterns compared to the thin plate
+    spline, but still indicative of overfitting
 
 #### 6. B-spline linear model
+
 ```{r}
 knots <- quantile(mcycle$times, probs = seq(0, 1, length.out = 33))
 
@@ -856,6 +982,7 @@ summary(fit.bs)
 ```
 
 ##### *Comparison to other models:*
-- Poorer fit quality compared to penalized spline approaches and GAM
-- Has the same Adjusted \( R^2 \) as the CRS model (0.766)
-- Slightly lower RSE than the polynomial model (23.37)
+
+-   Poorer fit quality compared to penalized spline approaches and GAM
+-   Has the same Adjusted $R^2$ as the CRS model (0.766)
+-   Slightly lower RSE than the polynomial model (23.37)
